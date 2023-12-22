@@ -1,9 +1,7 @@
 # Author : FRESARD Tobias
 
 
-import TSP
 import numpy as np
-from Problem import Problem
 import time
 
 class SimulatedAnnealing :
@@ -12,7 +10,7 @@ class SimulatedAnnealing :
         self.factor = factor
     
     
-    def solve(self,problem: Problem, iterations = 100, batch_size = 10, timeout = None) :
+    def solve(self,problem, iterations = 100, batch_size = 10, timeout = None) :
         start_time = time.time()
         T = self.T
         costs= np.zeros(iterations)
