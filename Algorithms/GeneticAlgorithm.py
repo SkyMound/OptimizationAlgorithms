@@ -6,7 +6,7 @@ import time
 import random as rd
 
 class GeneticAlgorithm :
-    def __init__(self, crossover_rate = 0.6, mutation_rate = 0.6) :
+    def __init__(self, crossover_rate = 1, mutation_rate = 1) :
         self.crossover_rate = crossover_rate
         self.mutation_rate = mutation_rate
           
@@ -23,10 +23,10 @@ class GeneticAlgorithm :
                 print("Timeout exceeeded")
                 break
             
-            costs[i] = self.population_cost(problem, population)
+            costs[i] = problem.cost(self.selection(problem, population, 1)[0])
             parents = self.selection(problem, population, nb_parents)
             children = self.crossover(problem, parents, nb_children)
-            mutants = problem.mutation(children, self.mutation_rate)
+            mutants = self.mutation(problem, children)
             population[:parents.shape[0], :] = parents
             population[parents.shape[0]:, :] = mutants
 
@@ -39,7 +39,7 @@ class GeneticAlgorithm :
         
         fitness_scores = [problem.cost(solution) for solution in population]
         
-        sorted_indices = sorted(range(len(fitness_scores)), key=lambda k: fitness_scores[k])
+        sorted_indices = sorted(range(len(fitness_scores)), key=lambda k: fitness_scores[k],reverse=True)
         
         selected_solutions = np.array([population[idx] for idx in sorted_indices[:nb_selection]])
 
@@ -69,7 +69,7 @@ class GeneticAlgorithm :
         for i in range(population.shape[0]):
             x = rd.random()
             if x > self.mutation_rate:
-                mutants[i] = np.copy(population[i])
+                mutants[i] = np.copy(mutants[i])
             else :
-                mutants[i] = problem.mutation(population[i])
+                mutants[i] = problem.mutation(mutants[i])
         return mutants

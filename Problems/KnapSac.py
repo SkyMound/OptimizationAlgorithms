@@ -63,3 +63,4 @@ class KnapSac :
             solution[random_index] = 1
         else:
             solution[random_index] = 0
+        return solution
