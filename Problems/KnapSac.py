@@ -21,6 +21,10 @@ class KnapSac :
     def get_nb_qubit(self) :
         return self.nb_objects
     
+    # Return a solution from the qubits
+    def evaluate(self, qubits) :
+        return np.array([0 if rd.random() < qj[0]**2 else 1 for qj in qubits])
+    
     # Apply heursitics to solution
     def optimize_solution(self, solution) :
         pass
@@ -45,4 +49,17 @@ class KnapSac :
         else :
             return deltaWeight
     
+    def crossover(self, parent1, parent2) :
+        crossing_point = int(self.nb_objects/2) # middle crossover
+        crossing = np.zeros(self.nb_objects,dtype=int)
+        crossing[:crossing_point] = parent1[:crossing_point]
+        crossing[crossing_point:] = parent2[crossing_point:]
+        crossing = self.rectify(crossing)
+        return crossing
     
+    def mutation(self, solution) :
+        random_index  = rd.randrange(0,solution.shape[0])
+        if solution[random_index] == 0:
+            solution[random_index] = 1
+        else:
+            solution[random_index] = 0

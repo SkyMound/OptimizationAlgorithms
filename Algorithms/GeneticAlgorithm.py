@@ -1,9 +1,9 @@
 # Author : FRESARD Tobias
 
 
-import TSP
 import numpy as np
 import time 
+import random as rd
 
 class GeneticAlgorithm :
     def __init__(self, crossover_rate = 0.6, mutation_rate = 0.6) :
@@ -25,7 +25,7 @@ class GeneticAlgorithm :
             
             costs[i] = self.population_cost(problem, population)
             parents = self.selection(problem, population, nb_parents)
-            children = problem.crossover(parents, nb_children, self.crossover_rate)
+            children = self.crossover(problem, parents, nb_children)
             mutants = problem.mutation(children, self.mutation_rate)
             population[:parents.shape[0], :] = parents
             population[parents.shape[0]:, :] = mutants
@@ -47,3 +47,29 @@ class GeneticAlgorithm :
     
     def population_cost(self, problem, population) :
         return np.mean([problem.cost(solution) for solution in population])
+    
+    def crossover(self, problem, population, nb_crossover) :
+        crossings = []
+        i = 0
+
+        while (i < nb_crossover): 
+            x = rd.random()
+            parent1_index = i%population.shape[0]
+            if x > self.crossover_rate:
+                crossings.append(np.copy(population[parent1_index]))
+            else :
+                parent2_index = (i+1)%population.shape[0]
+                crossings.append(problem.crossover(population[parent1_index],population[parent2_index]))
+            i += 1
+            
+        return np.array(crossings)
+    
+    def mutation(self, problem, population) :
+        mutants = np.copy(population)
+        for i in range(population.shape[0]):
+            x = rd.random()
+            if x > self.mutation_rate:
+                mutants[i] = np.copy(population[i])
+            else :
+                mutants[i] = problem.mutation(population[i])
+        return mutants
