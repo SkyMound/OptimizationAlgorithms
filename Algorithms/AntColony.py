@@ -19,7 +19,7 @@ class AntColony :
         start_time = time.time()
         
         costs = np.zeros(iterations)
-        distances = problem.get_distances()
+        distances = problem.get_visibilities()
         nb_locations = distances.shape[0]
         pheromone_matrice = np.full((nb_locations,nb_locations),self.initial_pheromone)
         

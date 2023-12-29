@@ -103,5 +103,5 @@ class TSP :
             mutants[i] = self.rectify(mutants[i])
         return mutants
         
-    def get_distances(self) :
+    def get_visibilities(self) :
         return np.copy(self.distances)
