@@ -1,17 +1,23 @@
 # Author : FRESARD Tobias
 
-
 import numpy as np
 import time 
 import random as rd
 import math
 
 class QuanticGeneticAlgorithm :
-    def __init__(self ) :
-        pass
+    def __init__(self, v1 = 0, v2 = 0, v3 = 0.01, v4 = 0, v5 = -0.01, v6 = 0, v7 = 0, v8 = 0) :
+        self.v1 = v1
+        self.v2 = v2
+        self.v3 = v3
+        self.v4 = v4
+        self.v5 = v5
+        self.v6 = v6
+        self.v7 = v7
+        self.v8 = v8
           
     
-    def solve(self,problem, iterations = 100, batch_size = 10, timeout = None, version = 0):
+    def solve(self,problem, iterations = 100, batch_size = 10, timeout = None):
         start_time = time.time()
         costs = np.zeros(iterations)
 
@@ -35,34 +41,35 @@ class QuanticGeneticAlgorithm :
                     bbit_flag = bbit == 1 
                     cost_flag = current_cost >= best_cost
                     
-                    if (version==0) :
-                        
-                        if not(bit_flag) and bbit_flag and cost_flag :
-                            gamma = 0.05*math.pi*self.compute_sign(qubit,-1,1,'r',0)
-                        
-                        elif bit_flag and not(bbit_flag) and not(cost_flag) :
-                            gamma = 0.01*math.pi*self.compute_sign(qubit,-1,1,'r',0)
-                            
-                        elif bit_flag  and cost_flag :
-                            gamma = 0.025*math.pi*self.compute_sign(qubit,1,-1,0,'r')
-                            
-                        elif bit_flag and bbit_flag and not(cost_flag) :
-                            gamma = 0.05*math.pi*self.compute_sign(qubit,1,-1,0,'r')
-                            
+                    theta = 0
+                    if not(bit_flag) :
+                        if not(bbit_flag) :
+                            if not(cost_flag) :
+                                theta = self.v1
+                            else :
+                                theta = self.v2
                         else :
-                            continue
-                            
-                    elif version == 1 :
-                        
-                        if not(bit_flag) and bbit_flag and not(cost_flag) :
-                            gamma = 0.01*math.pi*self.compute_sign(qubit,1,-1,'r',0)
-                        
-                        elif bit_flag and not(bbit_flag) and not(cost_flag) :
-                            gamma = -0.01*math.pi*self.compute_sign(qubit,1,-1,'r',0)
-                        
+                            if not(cost_flag) :
+                                theta = self.v3
+                            else :
+                                theta = self.v4
+                    else :
+                        if not(bbit_flag) :
+                            if not(cost_flag) :
+                                theta = self.v5
+                            else :
+                                theta = self.v6
                         else :
-                            continue
-                        
+                            if not(cost_flag) :
+                                theta = self.v7
+                            else :
+                                theta = self.v8
+                                   
+                    if theta == 0 :
+                        continue
+                    
+                    gamma = theta*math.pi*self.compute_sign(qubit,-1,1,'r',0)
+
                     U = np.array([[math.cos(gamma),-math.sin(gamma)],
                                   [math.sin(gamma),math.cos(gamma)]])
                     
@@ -94,9 +101,9 @@ class QuanticGeneticAlgorithm :
         return np.mean([problem.cost(solution) for solution in population])
     
     def compute_sign(self, q, v1, v2, v3, v4) :
-        if q[0]*q[1] > 0:
+        if q[0]*q[1] < 0:
             return v1
-        elif q[0]*q[1] < 0:
+        elif q[0]*q[1] > 0:
             return v2
         elif q[0] == 0 :
             return v3 if v3 != 'r' else rd.randrange(-1,2,2)
